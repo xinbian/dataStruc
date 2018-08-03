@@ -1,0 +1,14 @@
+Author: Xin Bian
+Compile: javac generics.java
+Run: java generics
+
+
+12345
+1.12.23.34.4
+HELLO
+onceuponatime
+max Integer is: 5
+max Double is: 4.4
+max Character is: O
+max String is: upon
+function interface: O

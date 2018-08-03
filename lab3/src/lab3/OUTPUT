@@ -1,0 +1,94 @@
+Author: Xin Bian
+Compile: javac lab3.java
+Run: java lab3
+
+output:
+for 1:
+print2DList
+10	15	30	40	
+15	5	8	2	
+20	2	4	2	
+1	4	5	0	
+runningSum2DArray
+95	85	70	40	
+30	15	10	2	
+28	8	6	2	
+10	9	5	0	
+print2Dlist
+10	15	30	40	
+15	5	8	2	
+20	2	4	2	
+1	4	5	0	
+runningSum2DArrayList
+95	85	70	40	
+30	15	10	2	
+28	8	6	2	
+10	9	5	0
+
+for 2:
+print2DList
+10	15	30	40	
+15	5	8	2	
+20	2	4	2	
+1	4	5	0	
+runningSum2DArray
+10	25	55	95	
+15	20	28	30	
+20	22	26	28	
+1	5	10	10	
+print2Dlist
+10	15	30	40	
+15	5	8	2	
+20	2	4	2	
+1	4	5	0	
+runningSum2DArrayList
+10	25	55	95	
+15	20	28	30	
+20	22	26	28	
+1	5	10	10	
+
+for 3
+print2DList
+10	15	30	40	
+15	5	8	2	
+20	2	4	2	
+1	4	5	0	
+runningSum2DArray
+46	26	47	44	
+36	11	17	4	
+21	6	9	2	
+1	4	5	0	
+print2Dlist
+10	15	30	40	
+15	5	8	2	
+20	2	4	2	
+1	4	5	0	
+runningSum2DArrayList
+46	26	47	44	
+36	11	17	4	
+21	6	9	2	
+1	4	5	0
+
+for 4
+print2DList
+10	15	30	40	
+15	5	8	2	
+20	2	4	2	
+1	4	5	0	
+runningSum2DArray
+10	15	30	40	
+25	20	38	42	
+45	22	42	44	
+46	26	47	44	
+print2Dlist
+10	15	30	40	
+15	5	8	2	
+20	2	4	2	
+1	4	5	0	
+runningSum2DArrayList
+10	15	30	40	
+25	20	38	42	
+45	22	42	44	
+46	26	47	44
+
+
