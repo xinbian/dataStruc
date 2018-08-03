@@ -1,0 +1,250 @@
+import java.util.*;
+
+public class URArrayList<E> implements URList<E> {
+	
+	private int max; // max size
+	private int curr; //current position
+	private E[] list;
+	private  final static int defSize = 40; //default size
+	
+	public static void main(String[] args) {
+		URArrayList<String> testArray = new URArrayList<>();
+		List<String> list = Arrays.asList("d", "i", "n", "g");
+		testArray.add("b");
+		testArray.add("x");
+		testArray.addAll(list);
+		System.out.print(testArray.size());
+		
+		for (String s : testArray)
+			System.out.print(s);
+		System.out.print("\n");
+	}
+	
+	//constructor
+
+	URArrayList(int size) {
+		max = size;
+		curr = 0;
+		list = (E[]) new Object[max];
+	}
+	URArrayList(){this(defSize);}
+	
+	//extends an array 
+	URArrayList(E[] oldArr, int max) {
+		curr = oldArr.length;
+		list = (E[]) new Object[max];
+		for (int i = 0; i < curr; i++) {
+			list[i] = oldArr[i];
+		}
+	}
+	
+	public boolean add(E e) {
+		if(curr > max) throw new IllegalArgumentException("arrary is full");
+		list[curr] = e;
+		curr++;
+		return true;
+	}
+	
+	public void add(int index, E element) {
+		E[] temp = (E[]) new Object[max];
+
+		if(curr > max) throw new IllegalArgumentException("arrary is full");
+		if(index >= max || index < 0) 
+			throw new IllegalArgumentException("index not valid");
+		
+		for (int i = 0; i < max; i++) {
+			if (i<index) {
+				temp[i] = list[i];
+			}
+			else if (i == index) {
+				temp[i] = element;
+			}
+			else {
+				temp[i] = list[i-1];
+			}
+		}
+		
+		list = temp;
+		curr++;
+	}
+	
+	public boolean addAll(Collection<? extends E> c) {
+		if (curr + c.size() > max) 
+			throw new IllegalArgumentException("position larger than size");
+		
+		for (E ele : c) {
+			list[curr] = ele;
+			curr++;
+		}
+		return true;
+	}
+	
+	
+	public boolean addAll(int index, Collection<? extends E> c) {
+		if (curr + c.size() > max) 
+			throw new IllegalArgumentException("position larger than size");		
+		if(index > curr || index < 0) 
+			throw new IllegalArgumentException("index not valid");
+		
+		E[] temp = (E[]) new Object[max];
+		
+		for (int i = 0; i < index; i++) {
+			temp[i] = list[i];
+		}		
+				
+		int i = index;
+		for (E ele : c) {
+			temp[i] = ele;
+			i++;
+		}
+		
+		for (int j = i; j < max; j++) {
+			temp[j] = list[index];
+			index++;
+		}
+		
+		list = temp;
+		curr = curr + c.size();
+		
+		return true;
+	}
+	
+	
+	public void clear() {
+		curr = 0;
+	}
+	
+	
+	public boolean contains(Object o) {
+		for (int i = 0; i<curr; i++) {
+			if (list[i].equals(o)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean containsAll(Collection<?> c) {
+		for (Object o :c) {
+			if(!contains(o)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public boolean equals(Object o) {
+		E[] temp = (E[]) o;
+		for (int i=0; i<curr; i++) {
+			if(list[i] != temp[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	
+	public E get(int index) {
+		if (index >= curr)	
+			throw new IllegalArgumentException("invalid index");
+		return list[index];
+	}
+	
+	public int indexOf(Object o) {
+		for (int i=0; i<curr; i++) {
+			if(o.equals(list[i])) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	public boolean isEmpty() {
+		if (curr == 0) return true;
+		else return false;
+	}
+
+	public Iterator<E> iterator() {
+		return new URIterator();
+	}
+
+	private class URIterator implements Iterator<E> {
+		int i = 0;
+		public boolean hasNext() 	{return i != curr;}
+		public void remove() 		{throw new UnsupportedOperationException();}
+		public E next() {
+			if (!hasNext()) 
+				throw new NoSuchElementException();
+            return list[i++];
+		}
+	}
+
+	// Removes the element at the specified position in this list
+	public E remove(int index) {
+		if (index >= curr) throw new IllegalArgumentException("invalid index");
+		E[] temp = (E[]) new Object[max];
+		E element = list[index];
+		for (int i = 0; i < curr; i++) {
+			if(i<index) temp[i] = list[i];
+			if(i>index) temp[i-1] = list[i];
+		}
+		curr--;
+		return element;
+	}
+	
+	// Removes the first occurrence of the specified element from this list,
+	// if it is present
+	public boolean remove(Object o) {
+		int i = indexOf(o);
+		if (i == -1) throw new IllegalArgumentException("the Object does not exists");
+		remove(i);
+		return true;
+		
+	}
+	
+	// Removes from this list all of its elements that are contained
+	// in the specified collection
+	public boolean removeAll(Collection<?> c) {
+		for (Object o: c) {
+			remove(o);
+		}
+		return true;
+	}
+	
+	// Replaces the element at the specified position in this list
+	// with the specified element
+	public E set(int index, E element) {
+		E temp = list[index];
+		list[index] = element;
+		return temp;
+	}
+	
+	// Returns the number of elements in this list.
+	public int size(){
+		return curr;
+	}
+	
+	// Returns a view of the portion of this list
+	// between the specified fromIndex, inclusive, and toIndex, exclusive.
+	public URList<E> subList(int fromIndex, int toIndex){
+		if(fromIndex >= toIndex || fromIndex < 0 || toIndex > curr)
+			throw new IllegalArgumentException("invalid index");
+		
+		int n = toIndex - fromIndex;
+		E[] temp = (E[]) new Object[n];
+		for (int i = 0; i<n; i++) {
+			temp[i] = temp[fromIndex++];
+		}
+		URArrayList<E> sublist = new URArrayList<>(temp, defSize);
+		return sublist;
+	}
+	
+	// Returns an array containing all of the elements in this list
+	// in proper sequence (from first to the last element).
+	public Object[] toArray() {
+		E[] arr = (E[]) new Object[curr];
+		for (int i = 0; i < curr; i++)
+			arr[i] = list[i];
+		return arr;
+	}
+}

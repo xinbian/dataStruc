@@ -8,13 +8,33 @@ public class URArrayList<E> implements URList<E> {
 	private  final static int defSize = 40; //default size
 	
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+		URArrayList<String> testArray = new URArrayList<>();
+		List<String> list = Arrays.asList("d", "i", "n", "g");
+		testArray.add("b");
+		testArray.add("x");
+		testArray.addAll(list);
+		System.out.print(testArray.size());
+		System.out.print('\n');
+		for (String s : testArray)
+			System.out.print(s);
+		System.out.print("\n");
+		System.out.print(testArray.contains("2"));
+		System.out.print("\n");
+		System.out.print(testArray.remove(4));
+		System.out.print("\n");
+		for (String s : testArray)
+			System.out.print(s);
+		System.out.print("\n");
+		System.out.print(testArray.remove("x"));
+		System.out.print("\n");
+		for (String s : testArray)
+			System.out.print(s);
 	}
 	
 	//constructor
 
-	URArrayList(int max) {
+	URArrayList(int size) {
+		max = size;
 		curr = 0;
 		list = (E[]) new Object[max];
 	}
@@ -38,7 +58,7 @@ public class URArrayList<E> implements URList<E> {
 	
 	public void add(int index, E element) {
 		E[] temp = (E[]) new Object[max];
-		
+
 		if(curr > max) throw new IllegalArgumentException("arrary is full");
 		if(index >= max || index < 0) 
 			throw new IllegalArgumentException("index not valid");
@@ -136,6 +156,8 @@ public class URArrayList<E> implements URList<E> {
 	
 	
 	public E get(int index) {
+		if (index >= curr)	
+			throw new IllegalArgumentException("invalid index");
 		return list[index];
 	}
 	
@@ -153,22 +175,35 @@ public class URArrayList<E> implements URList<E> {
 		else return false;
 	}
 
-	public Iterator<E> iterator(){
-		
+	public Iterator<E> iterator() {
+		return new URIterator();
 	}
-	
+
+	private class URIterator implements Iterator<E> {
+		int i = 0;
+		public boolean hasNext() 	{return i != curr;}
+		public void remove() 		{throw new UnsupportedOperationException();}
+		public E next() {
+			if (!hasNext()) 
+				throw new NoSuchElementException();
+            return list[i++];
+		}
+	}
+
 	// Removes the element at the specified position in this list
 	public E remove(int index) {
-		if (index >= curr) throw new IllegalArgumentException("out of index");
+		if (index >= curr) throw new IllegalArgumentException("invalid index");
 		E[] temp = (E[]) new Object[max];
 		E element = list[index];
 		for (int i = 0; i < curr; i++) {
 			if(i<index) temp[i] = list[i];
 			if(i>index) temp[i-1] = list[i];
 		}
+		list = temp;
 		curr--;
 		return element;
 	}
+	
 	// Removes the first occurrence of the specified element from this list,
 	// if it is present
 	public boolean remove(Object o) {
@@ -178,6 +213,7 @@ public class URArrayList<E> implements URList<E> {
 		return true;
 		
 	}
+	
 	// Removes from this list all of its elements that are contained
 	// in the specified collection
 	public boolean removeAll(Collection<?> c) {
@@ -186,6 +222,7 @@ public class URArrayList<E> implements URList<E> {
 		}
 		return true;
 	}
+	
 	// Replaces the element at the specified position in this list
 	// with the specified element
 	public E set(int index, E element) {
@@ -193,32 +230,33 @@ public class URArrayList<E> implements URList<E> {
 		list[index] = element;
 		return temp;
 	}
+	
 	// Returns the number of elements in this list.
 	public int size(){
-		return curr-1;
+		return curr;
 	}
+	
 	// Returns a view of the portion of this list
 	// between the specified fromIndex, inclusive, and toIndex, exclusive.
 	public URList<E> subList(int fromIndex, int toIndex){
+		if(fromIndex >= toIndex || fromIndex < 0 || toIndex > curr)
+			throw new IllegalArgumentException("invalid index");
+		
 		int n = toIndex - fromIndex;
 		E[] temp = (E[]) new Object[n];
 		for (int i = 0; i<n; i++) {
 			temp[i] = temp[fromIndex++];
 		}
-		
 		URArrayList<E> sublist = new URArrayList<>(temp, defSize);
 		return sublist;
-		
 	}
+	
 	// Returns an array containing all of the elements in this list
 	// in proper sequence (from first to the last element).
 	public Object[] toArray() {
-		E[] arr = (E[]) new Object[curr-1];
-		for (int i = 0; i < curr-1; i++)
+		E[] arr = (E[]) new Object[curr];
+		for (int i = 0; i < curr; i++)
 			arr[i] = list[i];
 		return arr;
 	}
-	
-	
-	
 }
