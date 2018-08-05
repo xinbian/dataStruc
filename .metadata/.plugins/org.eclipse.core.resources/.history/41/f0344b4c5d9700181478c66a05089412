@@ -1,0 +1,26 @@
+/**
+ * 
+ */
+
+/**
+ * @author Xin
+ *
+ */
+public abstract class URLinkedList implements URList<E> {
+
+	/**
+	 * 
+	 */
+	public URLinkedList() {
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}

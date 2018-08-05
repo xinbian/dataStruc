@@ -1,0 +1,292 @@
+/**
+ * 
+ */
+import java.util.*;
+import java.io.*;
+
+/**
+ * @author Xin
+ *
+ */
+public class URLinkedList<E> implements URList<E> {
+	
+	private URLink<E> head;
+	private URLink<E> tail;
+	private int size;
+	
+	class URLink<E> {
+		// Doubly linked list node
+		private E e; // Value for this node
+		private URLink<E> n; // Pointer to next node in list
+		private URLink<E> p; // Pointer to previous node
+		
+		// Constructors
+		URLink(E it, URLink<E> inp, URLink<E> inn) { e = it; p = inp; n = inn; }
+		URLink(URLink<E> inp, URLink<E> inn) { p = inp; n = inn; }
+		
+		// Get and set methods for the data members
+		public E element() { return e; } // Return the value
+		public E setElement(E it) { return e = it; } // Set element value
+		public URLink<E> next() { return n; } // Return next link
+		public URLink<E> setNext(URLink<E> nextval) { return n = nextval; } // Set next link
+		public URLink<E> prev() { return p; } // Return prev link
+		public URLink<E> setPrev(URLink<E> prevval) { return p = prevval; } // Set prev link
+		
+	}
+	
+	public URLinkedList() {
+		head = new URLink<E>(null, null);
+		tail = new URLink<E>(null, null);
+		head.setNext(tail);
+		tail.setPrev(head);
+		head.setPrev(null);
+		tail.setNext(null);
+		size = 0;
+	}
+	
+	public URLinkedList(URLink<E> fromLink, URLink<E> toLink, int size) {
+		head.setNext(fromLink);
+		tail.setPrev(toLink);
+		this.size = size;
+	}
+	
+	public boolean add(E e) {
+		URLink<E> newLink = new URLink<E>(e, tail.prev(), tail);
+		tail.setPrev(newLink);
+		newLink.prev().setNext(newLink);
+		size++;
+		return true;
+		
+	}
+	
+	public void add(int index, E element) {
+		URLink<E> oldnode = indexLink(index);
+		URLink<E> newnode = new URLink<E>(element, oldnode.prev(), oldnode.next());
+		oldnode.prev().setNext(newnode);
+		oldnode.setPrev(newnode);
+		size++;
+	}
+	
+	private URLink<E> indexLink(int index) {
+		if (index <= 0) 
+			throw new IllegalArgumentException("invalid index, smaller than head");
+		if (index > size) 
+			throw new IllegalArgumentException("invalid index, larger than tail");
+		URLink<E> temp = head;
+		for (int i = 0; i <= index; i++)
+			if (i != 0)
+				temp = temp.next();	
+		return 	temp;
+	} 
+
+	public boolean addAll(Collection<? extends E> c) {
+		for (E e: c) {
+			add(e);
+		}
+		return true;
+	}
+	
+	public boolean addAll(int index, Collection<? extends E> c) {
+		URLink<E> oldnode = indexLink(index);
+		for (E e: c) {
+			URLink<E> newnode = new URLink<E>(e, oldnode.prev(), oldnode);
+			oldnode.prev().setNext(newnode);
+			//????? why oldnode.next()
+			oldnode.setPrev(newnode);
+			size++;
+		}
+		return true;	
+	}
+	
+	public void clear(){
+		head.setNext(tail);
+		tail.setPrev(head);
+		size = 0;
+	}
+	
+	public boolean contain(Object o) {
+		URLink<E> temp = head.next();
+		while (temp != tail) {
+			if (o.equals(temp.element())) 
+				return true;
+			temp = temp.next();	
+		}
+		return false;
+	}
+	
+	public boolean containsAll(Collection<?> c) {
+		for(Object e : c) {
+			if (!contains(e))
+				return false;
+		}
+		return true;
+	}
+	
+	public boolean equals(Collection<?> c) {
+		URLink<E> temp = head;
+		for(Object e : c) {
+			if (!temp.element().equals(e))
+				return false;
+			temp = temp.next();	
+		}
+		return true;		
+	}
+	
+	public E get(int index) {
+		if (index == 0)		
+			throw new IllegalArgumentException("head element is null");
+		if (index > size)		
+			throw new IllegalArgumentException("invalid index");
+		URLink<E> indexNode = indexLink(index);
+		return  indexNode.element();
+	}
+	
+	public int indexOf(Object o) {
+		URLink<E> tempNode = head.next();
+		for (int i = 0; i <= size; i++)
+			if (o.equals(tempNode.element()))
+				return i;
+			tempNode = tempNode.next();	
+		
+		return 	-1;
+	}
+	
+	public boolean isEmpty() {
+		if (size == 0) return true;
+		else return false;
+	}
+	//don't understand iterator??
+	public Iterator<E> iterator(){
+		return new URIterator();
+	}
+	
+	private class URIterator implements Iterator<E>{
+		private URLink<E> tempNode = head.next();
+		public boolean hasNext() {return tempNode != tail;}
+		public void remove() 		{throw new UnsupportedOperationException();}
+		public E next() {
+			if (!hasNext()) throw new NoSuchElementException();
+			E e = tempNode.element();
+			tempNode = tempNode.next();
+			return e;
+		}
+	}
+	
+	public E remove(int index) {
+		if (index == 0)		
+			throw new IllegalArgumentException("head element is null");
+		if (index > size)		
+			throw new IllegalArgumentException("invalid index");
+		URLink<E> indexNode = indexLink(index);
+		indexNode.prev().setNext(indexNode.next());
+		indexNode.next().setPrev(indexNode.prev());
+		size--;
+		return indexNode.element();
+	}
+	
+	public boolean remove(Object o) {
+		URLink<E> tempNode = head.next();
+		while (tempNode != tail) {
+			if (tempNode.element().equals(o)) {
+				tempNode.prev().setNext(tempNode.next());
+				tempNode.next().setPrev(tempNode.prev());
+				size--;
+				return true;	
+				}
+			tempNode = tempNode.next();
+		}
+		return false;
+	}
+	
+	public boolean removeAll(Collection<?> c) {
+		for (Object o: c) {
+			remove(o);
+		}
+		return true;
+	}
+	
+	public E set(int index, E element) {
+		if (index == 0)		
+			throw new IllegalArgumentException("head element is null");
+		if (index > size)		
+			throw new IllegalArgumentException("invalid index");
+		URLink<E> indexNode = indexLink(index);
+		indexNode.setElement(element);
+		return element;
+	}
+	
+	public int size() {
+		return size;
+	}
+	
+	public URList<E> subList(int fromIndex, int toIndex){
+		if(fromIndex >= toIndex || fromIndex < 0 || toIndex > size)
+			throw new IllegalArgumentException("invalid index");
+		URLink<E> firstNode = indexLink(fromIndex);
+		URLink<E> lastNode = indexLink(toIndex-1);
+		int n = toIndex - fromIndex - 1;
+		URLinkedList<E> sublist = new URLinkedList<E>(firstNode, lastNode, n);
+		return sublist;
+	}
+	
+	public Object[]  toArray() {
+		Object[] arr = new Object[size]; 
+		URLink<E> tempNode = head.next();
+		for (int i = 0; i < size; i++) {
+			arr[i] = tempNode.element();
+			tempNode = tempNode.next();
+		}
+		return arr;
+	}
+	
+	// Inserts the specified element at the beginning of this list.
+	public void addFirst(E e) {
+		URLink<E> newNode =  new URLink<E>(e, head, head.next());
+		head.next().setPrev(newNode);
+		head.setNext(newNode);
+		size++;
+		
+	}
+	
+	// Appends the specified element to the end of this list.
+	public void addLast(E e) {
+		URLink<E> newNode =  new URLink<E>(e, tail.prev(), tail);
+		tail.prev().setNext(newNode);
+		tail.setPrev(newNode);
+		size++;
+	}
+	// Retrieves, but does not remove, the first element of this list, or returns null if this list is empty.
+	public E peekFirst() {
+		if (head.next() == tail)
+				return null;
+		return head.next().element();
+				
+	}
+	// Retrieves, but does not remove, the last element of this list, or returns null if this list is empty.
+	public E peekLast() {
+		if (head.next() == tail)
+			return null;
+		return tail.prev().element();
+			
+	}
+	// Retrieves and removes the first element of this list, or returns null if this list is empty.
+	public E pollFirst() {
+		if (head.next() == tail)
+			return null;
+		E ele = head.next().element();
+		head.next().next().setPrev(head);
+		head.setNext(head.next().next());
+		size--;
+		return ele;
+	}
+	// Retrieves and removes the last element of this list, or returns null if this list is empty.
+	public E pollLast() {
+		
+	}
+	
+	static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}
